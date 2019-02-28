@@ -26,8 +26,8 @@ class TalonSpinTest(private val group: TalonGroup) : Test, Reportable {
     private var startTime = 0.0
     private var iterations = 0
     private var iteration = 0
-    private lateinit var talonCurrents: Map<TalonSRX, DoubleArray>
-    private lateinit var talonSpeeds: Map<TalonSRX, IntArray>
+    private lateinit var talonCurrents: Map<TalonSRX, MutableList<Double>>
+    private lateinit var talonSpeeds: Map<TalonSRX, MutableList<Int>>
 
     override fun execute() {
         when (state) {
@@ -35,8 +35,8 @@ class TalonSpinTest(private val group: TalonGroup) : Test, Reportable {
                 name = "spin test at ${percentOutput * 12.0} volts"
                 logger.info { "$name starting" }
                 iterations = (duration / group.healthCheck.period).roundToInt()
-                talonCurrents = group.talons.associateWith { DoubleArray(iterations) }
-                talonSpeeds = group.talons.associateWith { IntArray(iterations) }
+                talonCurrents = group.talons.associateWith { mutableListOf<Double>() }
+                talonSpeeds = group.talons.associateWith { mutableListOf<Int>() }
                 group.talons.forEach { it.set(PercentOutput, percentOutput) }
                 startTime = Timer.getFPGATimestamp()
                 state = WARMING
@@ -47,8 +47,8 @@ class TalonSpinTest(private val group: TalonGroup) : Test, Reportable {
             }
 
             RUNNING -> {
-                talonCurrents.forEach { talon, currents -> currents[iteration] = talon.outputCurrent }
-                talonSpeeds.forEach { talon, speeds -> speeds[iteration] = talon.selectedSensorVelocity }
+                talonCurrents.forEach { talon, currents -> currents.add(talon.outputCurrent) }
+                talonSpeeds.forEach { talon, speeds -> speeds.add(talon.selectedSensorVelocity) }
                 if (++iteration == iterations) state = STOPPING
             }
 
