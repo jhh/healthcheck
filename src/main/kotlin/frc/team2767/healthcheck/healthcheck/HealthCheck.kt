@@ -1,7 +1,7 @@
 package frc.team2767.healthcheck.healthcheck
 
 import edu.wpi.first.wpilibj.TimedRobot
-import frc.team2767.healthcheck.healthcheck.HealthCheckState.*
+import frc.team2767.healthcheck.healthcheck.HealthCheck.State.*
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
@@ -78,13 +78,20 @@ class HealthCheck {
         }
         logger.info { "health check report: http://10.27.67.2/healthcheck/index.html" }
     }
+
+    override fun toString(): String {
+        return "HealthCheck(testGroups=$testGroups)"
+    }
+
+
+    private enum class State {
+        STARTING,
+        RUNNING,
+        STOPPING,
+        STOPPED
+    }
+
 }
 
-private enum class HealthCheckState {
-    STARTING,
-    RUNNING,
-    STOPPING,
-    STOPPED
-}
 
 fun healthCheck(init: HealthCheck.() -> Unit): HealthCheck = HealthCheck().apply(init)

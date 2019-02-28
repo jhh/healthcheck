@@ -1,7 +1,7 @@
 package frc.team2767.healthcheck.healthcheck
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
-import frc.team2767.healthcheck.healthcheck.TestGroupState.*
+import frc.team2767.healthcheck.healthcheck.TestGroup.State.*
 import kotlinx.html.TagConsumer
 import kotlinx.html.div
 import kotlinx.html.h2
@@ -10,15 +10,16 @@ import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
-abstract class TestGroup(val healthCheck: HealthCheck) {
-    var name = "name not set"
+abstract class TestGroup(val healthCheck: HealthCheck) : Test {
+    override var name = "name not set"
 
     protected val tests = mutableListOf<Test>()
     private var state = STARTING
     private lateinit var iterator: Iterator<Test>
     private lateinit var currentTest: Test
 
-    fun execute() = when (state) {
+
+    override fun execute() = when (state) {
         STARTING -> {
             logger.info { "$name starting" }
             check(tests.isNotEmpty()) { "no tests in test group '$name'" }
@@ -39,20 +40,33 @@ abstract class TestGroup(val healthCheck: HealthCheck) {
         STOPPED -> throw IllegalStateException()
     }
 
-    fun isFinished() = state == STOPPED
+    override fun isFinished() = state == State.STOPPED
 
-    fun report(tagConsumer: TagConsumer<Appendable>) {
+    override fun report(tagConsumer: TagConsumer<Appendable>) {
         tagConsumer.div {
             h2 { +name }
-            table(classes = "testCards") {
-                tests.first().reportHeader(tagConsumer)
-                tests.forEach { it.results(tagConsumer) }
+            table {
+                val test = tests.first() as Reportable
+                test.reportHeader(tagConsumer)
+                tests.map { it as Reportable }.forEach { it.reportRows(tagConsumer) }
             }
         }
+    }
 
+
+    override fun toString(): String {
+        return "TestGroup(name='$name', tests=$tests)"
+    }
+
+
+    private enum class State {
+        STARTING,
+        RUNNING,
+        STOPPED
     }
 
 }
+
 
 class TalonGroup(healthCheck: HealthCheck) : TestGroup(healthCheck) {
     var talons = emptyList<TalonSRX>()
@@ -71,10 +85,4 @@ class TalonGroup(healthCheck: HealthCheck) : TestGroup(healthCheck) {
         tests.add(positionTest)
         return positionTest
     }
-}
-
-private enum class TestGroupState {
-    STARTING,
-    RUNNING,
-    STOPPED
 }

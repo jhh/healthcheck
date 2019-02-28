@@ -14,7 +14,8 @@ import kotlin.math.roundToInt
 private val logger = KotlinLogging.logger {}
 
 @Suppress("MemberVisibilityCanBePrivate")
-class TalonSpinTest(private val group: TalonGroup) : Test("Talon Spins") {
+class TalonSpinTest(private val group: TalonGroup) : Test, Reportable {
+    override var name = "talon spins"
     var percentOutput = 0.0
     var currentRange = 0.0..0.0
     var speedRange = 0..0
@@ -31,7 +32,7 @@ class TalonSpinTest(private val group: TalonGroup) : Test("Talon Spins") {
     override fun execute() {
         when (state) {
             STARTING -> {
-                name = "speed test at ${percentOutput * 12.0} volts"
+                name = "spin test at ${percentOutput * 12.0} volts"
                 logger.info { "$name starting" }
                 iterations = (duration / group.healthCheck.period).roundToInt()
                 talonCurrents = group.talons.associateWith { DoubleArray(iterations) }
@@ -71,6 +72,8 @@ class TalonSpinTest(private val group: TalonGroup) : Test("Talon Spins") {
 
     override fun isFinished() = state == STOPPED
 
+    override fun report(tagConsumer: TagConsumer<Appendable>) = reportTable(tagConsumer)
+
     override fun reportHeader(tagConsumer: TagConsumer<Appendable>) {
         tagConsumer.tr {
             th { +"talon ID" }
@@ -81,7 +84,7 @@ class TalonSpinTest(private val group: TalonGroup) : Test("Talon Spins") {
         }
     }
 
-    override fun results(tagConsumer: TagConsumer<Appendable>) {
+    override fun reportRows(tagConsumer: TagConsumer<Appendable>) {
         group.talons.forEach {
             tagConsumer.tr {
                 td { +"${it.deviceID}" }

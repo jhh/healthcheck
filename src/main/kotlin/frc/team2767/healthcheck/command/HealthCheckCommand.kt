@@ -4,8 +4,10 @@ import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import edu.wpi.first.wpilibj.command.Command
 import frc.team2767.healthcheck.healthcheck.HealthCheck
-import frc.team2767.healthcheck.healthcheck.TalonGroup
 import frc.team2767.healthcheck.healthcheck.healthCheck
+import mu.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
 
 class HealthCheckCommand : Command() {
 
@@ -16,16 +18,8 @@ class HealthCheckCommand : Command() {
     override fun initialize() {
         healthCheck = healthCheck {
 
-
             talonCheck {
-                name = "SOB Talons Spin Tests"
-                talons = talonsUnderTest
-
-                spinTests()
-            }
-
-            talonCheck {
-                name = "SOB Talons Position Tests"
+                name = "SOB Talon Tests"
                 talons = talonsUnderTest
 
                 positionTest {
@@ -35,37 +29,41 @@ class HealthCheckCommand : Command() {
                     controlMode = ControlMode.PercentOutput
                 }
 
+            }
+
+            talonCheck {
+                name = "SOB Talon Tests"
+                talons = talonsUnderTest
+
+                spinTest {
+                    percentOutput = 0.25
+                    currentRange = 0.0..0.5
+                    speedRange = 500..600
+                }
+
+                spinTest {
+                    percentOutput = -0.25
+                    currentRange = 0.0..0.5
+                    speedRange = 500..600
+                }
+
+                spinTest {
+                    percentOutput = -0.5
+                    currentRange = 0.0..0.5
+                    speedRange = 500..600
+                }
+
+                spinTest {
+                    warmUp = 0.5
+                    duration = 2.0
+                    percentOutput = 0.75
+                    currentRange = 0.6..1.2
+                    speedRange = 1000..1100
+                }
 
             }
         }
-    }
-
-    private fun TalonGroup.spinTests() {
-        spinTest {
-            percentOutput = 0.25
-            currentRange = 0.0..0.5
-            speedRange = 500..600
-        }
-
-        spinTest {
-            percentOutput = -0.25
-            currentRange = 0.0..0.5
-            speedRange = 500..600
-        }
-
-        spinTest {
-            percentOutput = -0.5
-            currentRange = 0.0..0.5
-            speedRange = 500..600
-        }
-
-        spinTest {
-            warmUp = 0.5
-            duration = 2.0
-            percentOutput = 0.75
-            currentRange = 0.6..1.2
-            speedRange = 1000..1100
-        }
+        logger.debug { healthCheck }
     }
 
     override fun execute() {

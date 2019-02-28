@@ -14,7 +14,8 @@ import kotlin.math.absoluteValue
 private val logger = KotlinLogging.logger {}
 
 @Suppress("MemberVisibilityCanBePrivate")
-class TalonPositionTest(private val group: TalonGroup) : Test("Talon Position Tests") {
+class TalonPositionTest(private val group: TalonGroup) : Test, Reportable {
+    override var name = "position test"
     var percentOutput = 0.0
     var peakVoltage = 12.0
     var zeroGoodEnough = 5
@@ -94,6 +95,8 @@ class TalonPositionTest(private val group: TalonGroup) : Test("Talon Position Te
 
     override fun isFinished() = state == STOPPED
 
+    override fun report(tagConsumer: TagConsumer<Appendable>) = reportTable(tagConsumer)
+
     override fun reportHeader(tagConsumer: TagConsumer<Appendable>) {
         tagConsumer.tr {
             th { +"talon ID" }
@@ -104,7 +107,7 @@ class TalonPositionTest(private val group: TalonGroup) : Test("Talon Position Te
         }
     }
 
-    override fun results(tagConsumer: TagConsumer<Appendable>) {
+    override fun reportRows(tagConsumer: TagConsumer<Appendable>) {
         group.talons.forEach {
             tagConsumer.tr {
                 td { +"${it.deviceID}" }
