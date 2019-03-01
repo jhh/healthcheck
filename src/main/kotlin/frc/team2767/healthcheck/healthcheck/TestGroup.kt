@@ -72,8 +72,8 @@ class TalonGroup(healthCheck: HealthCheck) : TestGroup(healthCheck) {
     var talons = emptyList<TalonSRX>()
 
 
-    fun spinTest(init: TalonSpinTest.() -> Unit): Test {
-        val spinTest = TalonSpinTest(this)
+    fun timedTest(init: TalonTimedTest.() -> Unit): Test {
+        val spinTest = TalonTimedTest(this)
         spinTest.init()
         tests.add(spinTest)
         return spinTest

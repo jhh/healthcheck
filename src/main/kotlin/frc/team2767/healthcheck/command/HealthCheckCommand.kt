@@ -35,25 +35,25 @@ class HealthCheckCommand : Command() {
                 name = "SOB Talon Tests"
                 talons = talonsUnderTest
 
-                spinTest {
+                timedTest {
                     percentOutput = 0.25
                     currentRange = 0.0..0.5
                     speedRange = 500..600
                 }
 
-                spinTest {
+                timedTest {
                     percentOutput = -0.25
                     currentRange = 0.0..0.5
                     speedRange = 500..600
                 }
 
-                spinTest {
+                timedTest {
                     percentOutput = -0.5
                     currentRange = 0.0..0.5
                     speedRange = 500..600
                 }
 
-                spinTest {
+                timedTest {
                     warmUp = 0.5
                     duration = 2.0
                     percentOutput = 0.75

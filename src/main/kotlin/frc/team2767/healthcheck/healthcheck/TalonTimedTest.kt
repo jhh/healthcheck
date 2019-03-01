@@ -3,7 +3,7 @@ package frc.team2767.healthcheck.healthcheck
 import com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput
 import com.ctre.phoenix.motorcontrol.can.TalonSRX
 import edu.wpi.first.wpilibj.Timer
-import frc.team2767.healthcheck.healthcheck.TalonSpinTest.State.*
+import frc.team2767.healthcheck.healthcheck.TalonTimedTest.State.*
 import kotlinx.html.TagConsumer
 import kotlinx.html.td
 import kotlinx.html.th
@@ -14,8 +14,8 @@ import kotlin.math.roundToInt
 private val logger = KotlinLogging.logger {}
 
 @Suppress("MemberVisibilityCanBePrivate")
-class TalonSpinTest(private val group: TalonGroup) : Test, Reportable {
-    override var name = "talon spins"
+class TalonTimedTest(private val group: TalonGroup) : Test, Reportable {
+    override var name = "talon timed test"
     var percentOutput = 0.0
     var currentRange = 0.0..0.0
     var speedRange = 0..0
@@ -32,7 +32,7 @@ class TalonSpinTest(private val group: TalonGroup) : Test, Reportable {
     override fun execute() {
         when (state) {
             STARTING -> {
-                name = "spin test at ${percentOutput * 12.0} volts"
+                name = "timed test at ${percentOutput * 12.0} volts"
                 logger.info { "$name starting" }
                 iterations = (duration / group.healthCheck.period).roundToInt()
                 talonCurrents = group.talons.associateWith { mutableListOf<Double>() }
@@ -61,11 +61,11 @@ class TalonSpinTest(private val group: TalonGroup) : Test, Reportable {
                 talonSpeeds.forEach { talon, speeds ->
                     logger.info { "talon ${talon.deviceID} average speed = ${speeds.average()}" }
                 }
-                logger.info { "spin test finished" }
+                logger.info { "timed test finished" }
                 state = STOPPED
             }
 
-            STOPPED -> logger.info { "speed test stopped" }
+            STOPPED -> logger.info { "timed test stopped" }
 
         }
     }
