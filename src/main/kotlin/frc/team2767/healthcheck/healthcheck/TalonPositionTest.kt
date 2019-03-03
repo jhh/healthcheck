@@ -108,17 +108,16 @@ class TalonPositionTest(private val group: TalonGroup) : Test, Reportable {
     }
 
     override fun reportRows(tagConsumer: TagConsumer<Appendable>) {
-        group.talons.forEach {
-            tagConsumer.tr {
-                td { +"${it.deviceID}" }
-                td { +"%.1f".format(percentOutput * peakVoltage) }
-                td { +"$encoderTarget" }
-                td { +"%.2f".format(currents.average()) }
-                td { +"%.2f".format(speeds.average()) }
-            }
+        tagConsumer.tr {
+            td { +"${talon.deviceID}" }
+            td { +"%.1f".format(percentOutput * peakVoltage) }
+            td { +"$encoderTarget" }
+            td { +"%.2f".format(currents.average()) }
+            td { +"%.2f".format(speeds.average()) }
         }
     }
 
+    @Suppress("unused")
     private enum class State {
         STARTING,
         ZEROING,

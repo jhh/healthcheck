@@ -22,7 +22,7 @@ class TalonTimedTest(private val group: TalonGroup) : Test, Reportable {
     var warmUp = 0.25
     var duration = 2.0
 
-    private var state = State.STARTING
+    private var state = STARTING
     private var startTime = 0.0
     private var iterations = 0
     private var iteration = 0
@@ -96,6 +96,7 @@ class TalonTimedTest(private val group: TalonGroup) : Test, Reportable {
         }
     }
 
+    @Suppress("unused")
     private enum class State {
         STARTING,
         WARMING,
